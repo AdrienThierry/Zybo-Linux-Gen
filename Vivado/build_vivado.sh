@@ -25,6 +25,7 @@ OPTIONS :
 -b | --bitstream		generate bitstream
 -e | --export			export hardware to SDK
 -f | --fsbl			generate FSBL
+-d | --devicetree		generate device tree
 "
 # END global variables
 
@@ -53,6 +54,9 @@ case $key in
 	;;
 	-f|--fsbl)
 	gen_fsbl=true # Generate FSBL
+	;;
+	-d|--devicetree)
+	gen_devicetree=true # Generate device tree
 	;;
 	*)
 	echo "$options_list" # unknown option
@@ -83,4 +87,20 @@ fi
 # Generate FSBL
 if [ "$gen_fsbl" = true ] ; then
 	hsi -mode batch -source generate_FSBL.tcl
+fi
+
+# Generate device tree
+if [ "$gen_devicetree" = true ] ; then
+	# Clone device tree sources Xilinx git repo
+	cd src
+	git clone https://github.com/Xilinx/device-tree-xlnx.git
+	cd ..
+
+	# Build device tree
+	hsi -mode batch -source generate_devicetree.tcl
+
+	# Compile device tree
+	cd Vivado_project/Vivado_project.sdk/devicetree
+	dtc -I dts -O dtb -o devicetree.dtb system.dts
+	cd ../../..
 fi
