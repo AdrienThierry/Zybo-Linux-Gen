@@ -8,6 +8,11 @@
 # ------------------------------------------------------------
 
 # Global variables
+scripts_dir=$(pwd)
+
+# Set the reference directory to the script parent directory
+origin_dir=$(pwd)/..
+
 options_list="
 OPTIONS :
 -t [path] | --toolchain [path]	(optional) Vivado toolchain location
@@ -33,8 +38,10 @@ shift # past argument or value
 done
 # END parse arguments
 
+cd $origin_dir
+
 # Source Xilinx tools
-source ../source_toolchain.sh $vivado_path
+source ../build_scripts/source_toolchain.sh $vivado_path
 
 # Clone Xilinx Linux kernel repo
 git clone https://github.com/Xilinx/linux-xlnx.git

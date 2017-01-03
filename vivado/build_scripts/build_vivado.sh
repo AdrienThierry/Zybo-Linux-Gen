@@ -11,6 +11,11 @@
 
 # Global variables
 
+scripts_dir=$(pwd)
+
+# Set the reference directory to the script parent directory
+origin_dir=$(pwd)/..
+
 # Get number of physical cores (number of processors * number of physical cores per processor) to determine number of jobs
 nb_cores=$(lscpu | awk '/^Core\(s\) per socket:/ {cores=$NF}; /^Socket\(s\):/ {sockets=$NF}; END{print cores*sockets}')
 
@@ -65,7 +70,7 @@ done
 # END parse arguments
 
 # Source Xilinx tools
-source ../source_toolchain.sh $vivado_path
+source $origin_dir/../build_scripts/source_toolchain.sh $vivado_path
 
 # Generate project
 if [ "$gen_project" = true ] ; then
@@ -79,29 +84,29 @@ fi
 
 # Export hardware to SDK
 if [ "$export" = true ] ; then
-	if [ ! -d "./Vivado_project/Vivado_project.sdk" ]; then
-		mkdir ./Vivado_project/Vivado_project.sdk
+	if [ ! -d $origin_dir/vivado_project/vivado_project.sdk ]; then
+		mkdir $origin_dir/vivado_project/vivado_project.sdk
 	fi
-	cp ./Vivado_project/Vivado_project.runs/impl_1/block_design_wrapper.sysdef ./Vivado_project/Vivado_project.sdk/block_design_wrapper.hdf
+	cp  $origin_dir/vivado_project/vivado_project.runs/impl_1/block_design_wrapper.sysdef $origin_dir/vivado_project/vivado_project.sdk/block_design_wrapper.hdf
 fi
 
 # Generate FSBL
 if [ "$gen_fsbl" = true ] ; then
-	hsi -mode batch -source generate_FSBL.tcl
+	hsi -mode batch -source generate_fsbl.tcl
 fi
 
 # Generate device tree
 if [ "$gen_devicetree" = true ] ; then
 	# Clone device tree sources Xilinx git repo
-	cd src
+	cd $origin_dir/src
 	git clone https://github.com/Xilinx/device-tree-xlnx.git
-	cd ..
+	cd $scripts_dir
 
 	# Build device tree
 	hsi -mode batch -source generate_devicetree.tcl
 
 	# Compile device tree
-	cd Vivado_project/Vivado_project.sdk/devicetree
+	cd $origin_dir/vivado_project/vivado_project.sdk/devicetree
 	dtc -I dts -O dtb -o devicetree.dtb system.dts
-	cd ../../..
+	cd $scripts_dir
 fi

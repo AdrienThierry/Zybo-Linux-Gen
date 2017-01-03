@@ -8,13 +8,19 @@
 # ------------------------------------------------------------
 
 # Global variables
+scripts_dir=$(pwd)
+
+# Set the reference directory to the script parent directory
+origin_dir=$(pwd)/..
+
 options_list="
 OPTIONS :
 -t [path] | --toolchain [path]	(optional) Vivado toolchain location
 				default : (HOME dir)/Xilinx/Vivado/(version)/
 "
 
-uboot_location="linux_sources/u-boot-xlnx"
+uboot_location=$origin_dir/linux/u-boot-xlnx
+SD_card_dir=$origin_dir/sd_card
 
 # Parse arguments
 while [[ $# -gt 0 ]]
@@ -44,21 +50,26 @@ if [ -f $uboot_location"/u-boot" ]; then
 fi
 
 # Create BOOT.bif
-echo "image: {" >> BOOT.bif
+echo "image: {" > $origin_dir/BOOT.bif
 
-string_fsbl="[bootloader]""$(pwd)""/Vivado/Vivado_project/Vivado_project.sdk/FSBL/executable.elf"
-string_bitstream="$(pwd)""/Vivado/Vivado_project/Vivado_project.sdk/block_design_wrapper.bit"
-string_uboot="$(pwd)""/linux_sources/u-boot-xlnx/u-boot.elf"
+string_fsbl="[bootloader]""$origin_dir""/vivado/vivado_project/vivado_project.sdk/fsbl/executable.elf"
+string_bitstream="$origin_dir""/vivado/vivado_project/vivado_project.sdk/block_design_wrapper.bit"
+string_uboot="$origin_dir""/linux/u-boot-xlnx/u-boot.elf"
 
-echo "$string_fsbl" >> BOOT.bif
-echo "$string_bitstream" >> BOOT.bif
-echo "$string_uboot" >> BOOT.bif
+echo "$string_fsbl" >> $origin_dir/BOOT.bif
+echo "$string_bitstream" >> $origin_dir/BOOT.bif
+echo "$string_uboot" >> $origin_dir/BOOT.bif
 
-echo "}" >> BOOT.bif
+echo "}" >> $origin_dir/BOOT.bif
+
+# Create SD_card directory if it doesn't exist
+if [ ! -d $SD_card_dir ]; then
+	mkdir $SD_card_dir
+fi
 
 # Create BOOT.img
-bootgen -image BOOT.bif -o i BOOT.bin
+bootgen -image $origin_dir/BOOT.bif -o i $SD_card_dir/BOOT.bin
 
 # Clean files
-rm BOOT.bif
+rm $origin_dir/BOOT.bif
 
