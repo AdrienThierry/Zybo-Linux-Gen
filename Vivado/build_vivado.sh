@@ -14,8 +14,6 @@
 # Get number of physical cores (number of processors * number of physical cores per processor) to determine number of jobs
 nb_cores=$(lscpu | awk '/^Core\(s\) per socket:/ {cores=$NF}; /^Socket\(s\):/ {sockets=$NF}; END{print cores*sockets}')
 
-version=$(find "$HOME/Xilinx/Vivado/." -maxdepth 1 -type d -name '[^.]?*' -printf %f -quit)
-
 options_list="
 OPTIONS :
 -t [path] | --toolchain [path]	(optional) Vivado toolchain location
