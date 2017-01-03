@@ -79,7 +79,10 @@ fi
 
 # Export hardware to SDK
 if [ "$export" = true ] ; then
-	vivado -mode batch -source export_hardware.tcl
+	if [ ! -d "./Vivado_project/Vivado_project.sdk" ]; then
+		mkdir ./Vivado_project/Vivado_project.sdk
+	fi
+	cp ./Vivado_project/Vivado_project.runs/impl_1/block_design_wrapper.sysdef ./Vivado_project/Vivado_project.sdk/block_design_wrapper.hdf
 fi
 
 # Generate FSBL
