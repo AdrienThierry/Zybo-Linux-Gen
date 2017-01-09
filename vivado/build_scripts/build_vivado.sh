@@ -24,7 +24,7 @@ OPTIONS :
 -t [path] | --toolchain [path]	(optional) Vivado toolchain location
 				default : (HOME dir)/Xilinx/Vivado/(version)/
 
--p | --project			generate project
+-p | --project			generate Vivado project
 -b | --bitstream		generate bitstream
 -e | --export			export hardware to SDK
 -f | --fsbl			generate FSBL
