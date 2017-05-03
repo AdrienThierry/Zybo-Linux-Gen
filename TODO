@@ -1,0 +1,8 @@
+- README on Github. Look for dependencies on Xilinx Wiki
+- Feedback after every step
+- Manage dependencies between steps
+- Handle files that already exist
+- Allow more customization
+- Add option to remove logs
+- Manage complex options (-pbefd)
+- Don't launch a step when the result already exists (unless forced by user)
